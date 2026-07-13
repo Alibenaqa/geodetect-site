@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GéoDetect : l'intelligence du sous-sol</title>
+<meta name="description" content="Détection de réseaux souterrains et de cavités par géoradar et intelligence artificielle, pour les chantiers de construction au Maroc.">
+<link rel="icon" type="image/png" href="assets/favicon_32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --charbon:#1C1F23;
+  --charbon-2:#23272B;
+  --charbon-3:#2E3338;
+  --orange:#E8722C;
+  --orange-vif:#F2823D;
+  --sable:#F9E3D3;
+  --gris:#7A8087;
+  --gris-clair:#B9BEC4;
+  --fond:#FFFFFF;
+  --fond-doux:#F6F5F3;
+  --bordure:#E7E5E1;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .revele{opacity:1!important;transform:none!important}
+}
+body{font-family:'Inter',sans-serif;color:var(--charbon);background:var(--fond);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;line-height:1.12;letter-spacing:-.01em}
+.mono{font-family:'IBM Plex Mono',monospace}
+a:focus-visible,button:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:2px}
+.conteneur{max-width:1180px;margin:0 auto;padding:0 28px}
+.revele{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.revele.visible{opacity:1;transform:none}
+
+/* ===== Navigation ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .3s,box-shadow .3s;padding:0}
+nav.solide{background:rgba(28,31,35,.92);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.nav-int{max-width:1180px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:12px}
+.nav-int img{width:32px;height:32px}
+.nav-marque{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;text-decoration:none;letter-spacing:-.01em}
+.nav-liens{margin-left:auto;display:flex;gap:32px;align-items:center}
+.nav-liens a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+.nav-liens a:hover{color:#fff}
+.nav-cta{background:var(--orange);color:#fff!important;padding:9px 20px;border-radius:8px;font-weight:600}
+.nav-cta:hover{background:var(--orange-vif)}
+@media(max-width:760px){.nav-liens a:not(.nav-cta){display:none}}
+
+/* ===== Hero plein écran ===== */
+.hero{min-height:100vh;background:var(--charbon);color:#fff;position:relative;display:flex;align-items:center;overflow:hidden}
+#radar-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 30% 45%,transparent 30%,rgba(28,31,35,.88) 100%)}
+.hero-int{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:150px 28px 120px}
+.hero .sur-titre{font-family:'IBM Plex Mono',monospace;color:var(--orange);font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.hero .sur-titre::before{content:"";width:34px;height:1.5px;background:var(--orange);display:inline-block}
+.hero h1{font-size:clamp(2.6rem,6.2vw,4.4rem);font-weight:700;max-width:17ch}
+.hero h1 em{font-style:normal;color:var(--orange)}
+.hero p.sous{margin-top:26px;max-width:54ch;color:var(--gris-clair);font-size:1.15rem;font-weight:400}
+.hero-ctas{margin-top:42px;display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:.98rem;padding:15px 30px;border-radius:10px;transition:transform .15s,box-shadow .2s,background .2s}
+.btn.plein{background:var(--orange);color:#fff}
+.btn.plein:hover{background:var(--orange-vif);transform:translateY(-2px);box-shadow:0 12px 30px rgba(232,114,44,.35)}
+.btn.contour{border:1.5px solid rgba(255,255,255,.28);color:#fff}
+.btn.contour:hover{border-color:var(--orange);color:var(--orange)}
+.hero-bas{position:absolute;bottom:0;left:0;right:0;z-index:2;border-top:1px solid rgba(255,255,255,.09)}
+.hero-bas .conteneur{display:flex;gap:0;flex-wrap:wrap}
+.hero-stat{flex:1;min-width:180px;padding:22px 26px 26px 0;display:flex;flex-direction:column;gap:2px}
+.hero-stat+.hero-stat{padding-left:26px;border-left:1px solid rgba(255,255,255,.09)}
+.hero-stat .v{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;color:#fff}
+.hero-stat .l{font-size:.78rem;color:var(--gris)}
+@media(max-width:700px){.hero-stat:nth-child(3){display:none}}
+
+/* ===== Bande standards ===== */
+.bande{background:var(--fond-doux);border-bottom:1px solid var(--bordure)}
+.bande .conteneur{display:flex;align-items:center;gap:34px;padding:20px 28px;flex-wrap:wrap;justify-content:center}
+.bande span{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gris);letter-spacing:.06em}
+.bande b{color:var(--charbon);font-weight:500}
+
+/* ===== Sections communes ===== */
+section{padding:110px 0}
+.etiquette{font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);font-weight:500;display:flex;align-items:center;gap:12px}
+.etiquette::before{content:"";width:34px;height:1.5px;background:var(--orange)}
+h2{font-size:clamp(1.9rem,4vw,2.9rem);margin:18px 0 20px;font-weight:700;max-width:24ch}
+.intro{max-width:62ch;color:var(--gris);font-size:1.1rem}
+
+/* ===== Plateforme (capture produit) ===== */
+.plateforme{background:#1C1F23;padding-top:0;margin-top:0}
+.plateforme .tete{color:#fff;padding:110px 0 70px}
+.plateforme .tete .intro{color:var(--gris-clair)}
+.cadre-nav{max-width:1080px;margin:0 auto;padding:0 28px}
+.cadre{background:#15181B;border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.45)}
+.cadre .barre{display:flex;align-items:center;gap:8px;padding:13px 18px;background:#1C1F23;border-bottom:1px solid rgba(255,255,255,.07)}
+.cadre .barre i{width:11px;height:11px;border-radius:50%;background:#3A4046;display:inline-block}
+.cadre .barre i:first-child{background:#E8722C}
+.cadre .barre span{margin-left:12px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:#6B7075}
+.cadre img{width:100%;display:block}
+.puces-produit{max-width:1080px;margin:34px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.puce{background:var(--fond);border:1px solid var(--bordure);border-radius:12px;padding:20px 22px;font-size:.9rem;color:var(--gris)}
+.puce b{display:block;color:var(--charbon);font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:4px}
+
+
+/* ===== Section 3D plein écran ===== */
+.sous-sol{background:var(--charbon);padding:0;position:relative}
+.scene-cadre{position:relative;width:100%;height:100vh;min-height:640px;overflow:hidden}
+#scene3d{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#scene3d.saisi{cursor:grabbing}
+.scene-texte{position:absolute;z-index:4;top:0;left:0;right:0;padding:96px 0 0;pointer-events:none;background:linear-gradient(180deg,rgba(28,31,35,.92) 0%,rgba(28,31,35,.55) 55%,transparent 100%)}
+.scene-texte .conteneur{pointer-events:auto}
+.scene-texte h2{color:#fff}
+.scene-texte .intro{color:var(--gris-clair);padding-bottom:60px}
+.scene-legende{position:absolute;left:28px;bottom:26px;display:flex;gap:14px;flex-wrap:wrap;z-index:4}
+.scene-legende span{display:inline-flex;align-items:center;gap:8px;background:rgba(28,31,35,.82);border:1px solid rgba(255,255,255,.14);color:#C9CDD1;font-size:.78rem;padding:7px 14px;border-radius:999px;backdrop-filter:blur(6px)}
+.scene-legende i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.scene-astuce{position:absolute;right:28px;bottom:32px;z-index:4;color:rgba(255,255,255,.55);font-family:'IBM Plex Mono',monospace;font-size:.74rem}
+.scene-regle{position:absolute;left:28px;top:50%;transform:translateY(-32%);z-index:4;display:flex;flex-direction:column;gap:44px;color:rgba(255,255,255,.45);font-family:'IBM Plex Mono',monospace;font-size:.7rem}
+.scene-regle span{display:flex;align-items:center;gap:10px}
+.scene-regle span::after{content:"";width:22px;height:1px;background:rgba(255,255,255,.25);display:inline-block}
+@media(max-width:640px){.scene-cadre{height:88vh;min-height:520px}.scene-regle{display:none}.scene-texte{padding-top:84px}}
+/* ===== Solutions ===== */
+.solutions{background:var(--fond)}
+.grille-sol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:52px}
+.carte-sol{background:var(--fond-doux);border:1px solid var(--bordure);border-radius:16px;padding:34px 30px;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;overflow:hidden}
+.carte-sol:hover{transform:translateY(-4px);box-shadow:0 18px 44px rgba(28,31,35,.1);border-color:var(--orange)}
+.carte-sol .ico{width:46px;height:46px;border-radius:10px;background:var(--sable);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.carte-sol .ico svg{width:24px;height:24px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.carte-sol h3{font-size:1.2rem;margin-bottom:10px}
+.carte-sol p{font-size:.94rem;color:var(--gris)}
+
+/* ===== Preuves ===== */
+.preuves{background:var(--charbon);color:#fff;position:relative;overflow:hidden}
+.preuves .intro{color:var(--gris-clair)}
+.grille-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;margin-top:52px}
+.stat{background:var(--charbon-2);padding:38px 32px}
+.stat .valeur{font-family:'IBM Plex Mono',monospace;font-size:2.9rem;color:var(--orange);font-weight:500}
+.stat h4{font-size:1rem;margin:10px 0 6px;color:#fff}
+.stat p{font-size:.88rem;color:var(--gris-clair)}
+.note-validation{margin-top:28px;font-size:.86rem;color:var(--gris);font-style:italic;max-width:74ch}
+
+/* ===== Processus ===== */
+.processus{background:var(--fond-doux)}
+.frise{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:56px}
+.pas{background:var(--fond);border:1px solid var(--bordure);border-radius:16px;padding:30px 26px;position:relative}
+.pas .num{font-family:'IBM Plex Mono',monospace;color:var(--orange);font-size:.85rem;letter-spacing:.1em;margin-bottom:14px;display:block}
+.pas h3{font-size:1.1rem;margin-bottom:8px}
+.pas p{font-size:.9rem;color:var(--gris)}
+.pas::after{content:"";position:absolute;top:38px;right:-22px;width:22px;height:1.5px;background:var(--bordure)}
+.pas:last-child::after{display:none}
+@media(max-width:1080px){.pas::after{display:none}}
+
+/* ===== Engagement ===== */
+.engagement{background:var(--fond)}
+.deux-col{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+@media(max-width:860px){.deux-col{grid-template-columns:1fr}}
+.liste-engagement{margin-top:34px;display:grid;gap:0}
+.item-eng{display:grid;grid-template-columns:30px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--bordure)}
+.item-eng svg{width:22px;height:22px;stroke:var(--orange);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;margin-top:3px}
+.item-eng h4{font-size:1rem;margin-bottom:4px}
+.item-eng p{font-size:.9rem;color:var(--gris)}
+.panneau-sable{background:var(--sable);border-radius:20px;padding:44px 40px}
+.panneau-sable .grand{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:600;color:#5A4636;line-height:1.35}
+.panneau-sable .grand em{font-style:normal;color:var(--orange)}
+.panneau-sable p{margin-top:16px;color:#7A6350;font-size:.95rem}
+
+/* ===== Fondateur ===== */
+.fondateur{background:var(--charbon);color:#fff}
+.fond-grille{display:grid;grid-template-columns:300px 1fr;gap:60px;margin-top:52px;align-items:center}
+@media(max-width:780px){.fond-grille{grid-template-columns:1fr;justify-items:start}}
+.fond-grille img{width:100%;max-width:300px;border-radius:20px;display:block;border:1px solid rgba(255,255,255,.12)}
+.fond-texte h3{font-size:1.5rem}
+.fond-texte .role{font-family:'IBM Plex Mono',monospace;color:var(--orange);font-size:.85rem;margin:8px 0 20px}
+.fond-texte p{color:var(--gris-clair);font-size:1rem;margin-bottom:14px;max-width:58ch}
+
+/* ===== CTA final ===== */
+.cta-final{background:linear-gradient(135deg,var(--orange) 0%,#D45F1C 100%);color:#fff;text-align:center;padding:96px 0}
+.cta-final h2{max-width:26ch;margin:14px auto 18px;color:#fff}
+.cta-final .intro{color:rgba(255,255,255,.9);margin:0 auto 38px}
+.cta-final .etiquette{color:#fff;justify-content:center}
+.cta-final .etiquette::before{background:#fff}
+.btn.blanc{background:#fff;color:var(--charbon)}
+.btn.blanc:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+
+/* ===== Footer ===== */
+footer{background:var(--charbon);color:var(--gris);padding:60px 0 34px}
+.foot-grille{display:grid;grid-template-columns:2fr 1fr 1fr;gap:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.09)}
+@media(max-width:700px){.foot-grille{grid-template-columns:1fr}}
+.foot-marque{display:flex;align-items:center;gap:12px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem}
+.foot-marque img{width:30px;height:30px}
+.foot-grille p{font-size:.88rem;margin-top:14px;max-width:34ch}
+.foot-col h4{color:#fff;font-size:.92rem;margin-bottom:16px}
+.foot-col a{display:block;color:var(--gris);text-decoration:none;font-size:.88rem;margin-bottom:10px;transition:color .2s}
+.foot-col a:hover{color:var(--orange)}
+.foot-bas{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:26px;font-size:.78rem}
+
+/* ===== Thème sombre global ===== */
+body{background:#1C1F23;color:#E8EAEC}
+h2{color:#fff}
+.intro{color:#B9BEC4}
+.bande{background:#23272B;border-bottom:1px solid rgba(255,255,255,.08)}
+.bande span{color:#8B9096}
+.bande b{color:#E8EAEC}
+.plateforme{background:#1C1F23;padding-top:0}
+.plateforme .tete{padding:110px 0 70px}
+.puce{background:#23272B;border:1px solid rgba(255,255,255,.1);color:#B9BEC4}
+.puce b{color:#fff}
+.solutions{background:#1C1F23}
+.carte-sol{background:#23272B;border-color:rgba(255,255,255,.09)}
+.carte-sol:hover{box-shadow:0 18px 44px rgba(0,0,0,.4);border-color:var(--orange)}
+.carte-sol h3{color:#fff}
+.carte-sol p{color:#B9BEC4}
+.carte-sol .ico{background:rgba(232,114,44,.16)}
+.preuves{background:#212529}
+.processus{background:#1C1F23}
+.pas{background:#23272B;border-color:rgba(255,255,255,.09)}
+.pas h3{color:#fff}
+.pas p{color:#B9BEC4}
+.pas::after{background:rgba(255,255,255,.16)}
+.engagement{background:#212529}
+.item-eng{border-top:1px solid rgba(255,255,255,.09)}
+.item-eng h4{color:#fff}
+.item-eng p{color:#B9BEC4}
+.fondateur{background:#1C1F23}
+.sous-sol{background:#1C1F23}
+
+/* ===== Démo animée ===== */
+.cadre{position:relative}
+.surbrillance{position:absolute;border:2.5px solid var(--orange);border-radius:10px;box-shadow:0 0 0 4000px rgba(21,24,27,.42),0 0 24px rgba(232,114,44,.5);transition:all .9s cubic-bezier(.6,.05,.25,1);pointer-events:none;z-index:2}
+.demo-etapes{max-width:1080px;margin:26px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:760px){.demo-etapes{grid-template-columns:repeat(2,1fr)}}
+.demo-etape{background:#23272B;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 18px;transition:border-color .4s,background .4s}
+.demo-etape.active{border-color:var(--orange);background:#2A2420}
+.demo-etape .n{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--orange);letter-spacing:.1em}
+.demo-etape b{display:block;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.95rem;margin:4px 0 3px}
+.demo-etape p{font-size:.8rem;color:#8B9096;line-height:1.45}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-int">
+    <a class="nav-marque" href="#"><img src="assets/geodetect_logo_dark_1700.png" alt="GéoDetect" style="height:34px;width:auto;display:block"></a>
+    <div class="nav-liens">
+      <a href="#plateforme">Plateforme</a>
+      <a href="#solutions">Solutions</a>
+      <a href="#preuves">Technologie</a>
+      <a href="#processus">Processus</a>
+      <a class="nav-cta" href="#contact">Nous contacter</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="radar-canvas" aria-hidden="true"></canvas>
+  <div class="hero-int">
+    <img src="assets/geodetect_icon_for_dark_512.png" alt="" style="width:62px;height:62px;margin-bottom:26px;display:block">
+    <div class="sur-titre">Géoradar &amp; intelligence artificielle</div>
+    <h1>Voyez le sous-sol <em>avant de creuser</em></h1>
+    <p class="sous">GéoDetect cartographie les réseaux enterrés et les cavités de vos chantiers au Maroc. Un jumeau numérique fiable du sous-sol, livré en 48 heures : vos équipes savent où creuser, et surtout où ne pas creuser.</p>
+    <div class="hero-ctas">
+      <a class="btn plein" href="#contact">Discuter de votre chantier</a>
+      <a class="btn contour" href="#plateforme">Découvrir la plateforme</a>
+    </div>
+  </div>
+  <div class="hero-bas">
+    <div class="conteneur">
+      <div class="hero-stat"><span class="v">95,2 %</span><span class="l">précision de détection (mAP50)</span></div>
+      <div class="hero-stat"><span class="v">48 h</span><span class="l">du scan au rapport livré</span></div>
+      <div class="hero-stat"><span class="v">2 239</span><span class="l">radargrammes marocains d'entraînement</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="bande">
+  <div class="conteneur">
+    <span style="letter-spacing:.12em;text-transform:uppercase;font-size:.72rem">Construit avec</span>
+    <span><b>YOLOv8</b> vision</span>
+    <span><b>Python</b> · FastAPI</span>
+    <span><b>DuckDB</b> analytique</span>
+    <span><b>Leaflet</b> cartographie</span>
+    <span><b>Ollama</b> LLM local</span>
+    <span><b>Playwright</b> tests</span>
+  </div>
+</div>
+
+<section class="plateforme" id="plateforme">
+  <div class="tete">
+    <div class="conteneur">
+      <div class="etiquette">La plateforme</div>
+      <h2>Le jumeau numérique de votre chantier</h2>
+      <p class="intro">Zones de chantier, passages de scan, détections géolocalisées avec profondeur calculée, rapports PDF : tout le sous-sol de votre projet, dans une interface consultable à vie.</p>
+    </div>
+  </div>
+  <div class="cadre-nav revele">
+    <div class="cadre">
+      <div class="barre"><i></i><i></i><i></i><span>geodetect · vue chantier</span></div>
+      <div style="position:relative">
+        <img src="assets/dashboard.jpg" alt="La plateforme GéoDetect : carte d'un chantier avec zones, détections de réseaux et profondeurs calculées" loading="lazy">
+        <div class="surbrillance" id="surbrillance"></div>
+      </div>
+    </div>
+  </div>
+  <div class="demo-etapes" id="demo-etapes">
+    <div class="demo-etape"><span class="n">ÉTAPE 01</span><b>Importer le chantier</b><p>Zones dessinées, passages de scan, images géoradar chargées.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 02</span><b>Détection par l'IA</b><p>Les réseaux et cavités apparaissent sur la carte, à leur position.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 03</span><b>Profondeurs et risques</b><p>Chaque détection avec sa profondeur calculée et son niveau de risque.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 04</span><b>Rapport en un clic</b><p>PDF complet avec plan du chantier, prêt pour le terrain.</p></div>
+  </div>
+  <div class="puces-produit">
+    <div class="puce revele"><b>Zones et sous-zones</b>Dessinez le chantier à sa forme réelle, découpez-le en zones numérotées, quadrillez passage par passage.</div>
+    <div class="puce revele"><b>Profondeur physique</b>Calculée depuis le temps de propagation de l'onde et le type de sol : la méthode standard de la géophysique.</div>
+    <div class="puce revele"><b>Rapport en un clic</b>PDF avec plan du chantier, tableau des détections, profondeurs et niveaux de risque, prêt pour le terrain.</div>
+  </div>
+</section>
+
+
+<section class="sous-sol" id="sous-sol">
+  <div class="scene-cadre">
+    <canvas id="scene3d"></canvas>
+    <div class="scene-texte">
+      <div class="conteneur">
+        <div class="etiquette">Sous vos pieds</div>
+        <h2>Ce que le géoradar révèle, en trois dimensions</h2>
+        <p class="intro">Les strates du sol, les réseaux qui le traversent, les cavités invisibles en surface. Le plan orange simule le passage du scan : chaque détection s'allume à son passage. Glissez pour explorer.</p>
+      </div>
+    </div>
+    <div class="scene-regle"><span>0 m</span><span>1 m</span><span>2 m</span><span>3 m</span></div>
+    <div class="scene-astuce">glisser pour pivoter</div>
+    <div class="scene-legende">
+      <span><i style="background:#E8722C"></i>Réseau détecté</span>
+      <span><i style="background:#B8860B"></i>Cavité</span>
+      <span><i style="background:rgba(232,114,44,.5)"></i>Plan de scan</span>
+    </div>
+  </div>
+</section>
+
+<section class="solutions" id="solutions">
+  <div class="conteneur">
+    <div class="etiquette">Solutions</div>
+    <h2>Pour chaque chantier qui touche le sol</h2>
+    <p class="intro">Du bâtiment urbain au site industriel, GéoDetect sécurise les travaux là où les plans n'existent pas ou ne sont plus à jour.</p>
+    <div class="grille-sol">
+      <div class="carte-sol revele">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+        <h3>BTP &amp; immobilier urbain</h3>
+        <p>Fondations, extensions, VRD : détectez conduites de gaz, câbles électriques et canalisations avant le premier coup de pelle, en ville où tout se croise.</p>
+      </div>
+      <div class="carte-sol revele">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V9l5 3V9l5 3V9l6 4v7"/></svg></div>
+        <h3>Sites industriels</h3>
+        <p>Usines, dépôts, zones logistiques : cartographiez les réseaux propres au site, souvent modifiés au fil des années sans mise à jour des plans.</p>
+      </div>
+      <div class="carte-sol revele">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v6m0 0c-4 0-7 2-7 6s3 6 7 6 7-2 7-6-3-6-7-6zM9 14a3 3 0 0 0 6 0"/></svg></div>
+        <h3>Cavités &amp; risques naturels</h3>
+        <p>Le géoradar détecte aussi les vides souterrains : caves oubliées, poches de dissolution, affaissements potentiels sous les emprises de construction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="preuves" id="preuves">
+  <div class="conteneur">
+    <div class="etiquette">Technologie</div>
+    <h2>Pas de magie, des chiffres mesurés</h2>
+    <p class="intro">La plateforme fonctionne aujourd'hui de bout en bout, du fichier radar brut au rapport livré. Chaque chiffre ci-dessous est mesuré, documenté et reproductible.</p>
+    <div class="grille-stats">
+      <div class="stat revele">
+        <div class="valeur">95,2 %</div>
+        <h4>Précision de détection</h4>
+        <p>mAP50 du modèle de vision artificielle, mesuré sur des données de validation indépendantes de l'entraînement.</p>
+      </div>
+      <div class="stat revele">
+        <div class="valeur">2 239</div>
+        <h4>Radargrammes marocains</h4>
+        <p>Le modèle est entraîné sur des scans de sols marocains réels : il connaît les terrains sur lesquels il travaille.</p>
+      </div>
+      <div class="stat revele">
+        <div class="valeur">100 %</div>
+        <h4>Flux opérationnel</h4>
+        <p>Import du scan, détection IA, positionnement carte, calcul de profondeur, rapport PDF : la chaîne complète est en production.</p>
+      </div>
+    </div>
+    <p class="note-validation">Formule de profondeur validée analytiquement ; campagne de validation terrain avec vérité par tranchées en préparation avec nos partenaires. Méthodologie documentée.</p>
+  </div>
+</section>
+
+<section class="processus" id="processus">
+  <div class="conteneur">
+    <div class="etiquette">Processus</div>
+    <h2>Du scan au rapport en quatre étapes</h2>
+    <div class="frise">
+      <div class="pas revele">
+        <span class="num">ÉTAPE 01</span>
+        <h3>Scan du terrain</h3>
+        <p>Un technicien géoradar partenaire quadrille la zone et capture les profils du sous-sol. Quelques heures, sans perturber le site.</p>
+      </div>
+      <div class="pas revele">
+        <span class="num">ÉTAPE 02</span>
+        <h3>Analyse par l'IA</h3>
+        <p>Détection des signatures de réseaux et de cavités, calcul des profondeurs, positionnement géographique sur la carte du chantier.</p>
+      </div>
+      <div class="pas revele">
+        <span class="num">ÉTAPE 03</span>
+        <h3>Validation experte</h3>
+        <p>Chaque détection est vérifiée humainement avant livraison. L'IA accélère le traitement de 80 %, l'expert garantit le résultat.</p>
+      </div>
+      <div class="pas revele">
+        <span class="num">ÉTAPE 04</span>
+        <h3>Livraison sous 48 h</h3>
+        <p>Carte interactive et rapport PDF : où sont les réseaux, à quelle profondeur, où creuser en sécurité. Historique conservé à vie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="engagement">
+  <div class="conteneur deux-col">
+    <div>
+      <div class="etiquette">Notre engagement</div>
+      <h2>Jamais d'invention sur vos cartes</h2>
+      <div class="liste-engagement">
+        <div class="item-eng revele">
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <div><h4>Type à confirmer, affiché tel quel</h4><p>Tant qu'un réseau n'est pas identifié avec certitude, il est livré "type à confirmer". Pas de gaz ou d'eau deviné.</p></div>
+        </div>
+        <div class="item-eng revele">
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <div><h4>Profondeurs avec leur méthode</h4><p>Chaque profondeur est marquée "estimée" avec les paramètres de calcul utilisés, mentionnés dans le rapport.</p></div>
+        </div>
+        <div class="item-eng revele">
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <div><h4>Position réelle ou rien</h4><p>Une détection sans position renseignée n'apparaît jamais placée au hasard sur la carte. La confiance se construit sur la rigueur.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="panneau-sable revele">
+      <div class="grand">« L'IA accélère le travail de 80 %. <em>L'expert garde le dernier mot.</em> »</div>
+      <p>C'est notre règle de conception : chaque livrable GéoDetect passe par une validation humaine, parce qu'une carte du sous-sol engage la sécurité de ceux qui creusent.</p>
+    </div>
+  </div>
+</section>
+
+<section class="fondateur" id="fondateur">
+  <div class="conteneur">
+    <div class="etiquette">Le fondateur</div>
+    <h2>Construit de bout en bout, ancré au Maroc</h2>
+    <div class="fond-grille">
+      <img src="assets/photo_fondateur.png" alt="Mohamed Ali Benaqa, fondateur de GéoDetect" class="revele">
+      <div class="fond-texte">
+        <h3>Mohamed Ali Benaqa</h3>
+        <div class="role">Fondateur · Data &amp; AI Engineer · Paris, France</div>
+        <p>Formé en Data &amp; Intelligence Artificielle à l'École Hetic (Paris), passé par le reporting chez Mamda Assurance et le data engineering chez Techwin Services, Ali a conçu et développé l'intégralité de la plateforme GéoDetect : entraînement du modèle IA, pipeline de traitement, cartographie et rapports.</p>
+        <p>Une connaissance directe du marché marocain et un réseau local dans le BTP pour construire les premiers partenariats terrain.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final" id="contact">
+  <div class="conteneur">
+    <div class="etiquette">Contact</div>
+    <h2>Un chantier, un géoradar, ou juste une question ?</h2>
+    <p class="intro">Nous recherchons nos premiers partenaires : techniciens et bureaux d'études équipés d'un géoradar au Maroc, et maîtres d'ouvrage prêts à tester la détection sur un chantier pilote.</p>
+    <a class="btn blanc" href="mailto:contact@geodetect.ma?subject=Contact%20GéoDetect">Écrire à GéoDetect</a>
+  </div>
+</section>
+
+<footer>
+  <div class="conteneur">
+    <div class="foot-grille">
+      <div>
+        <div class="foot-marque"><img src="assets/geodetect_logo_dark_1700.png" alt="GéoDetect" style="width:170px;height:auto"></div>
+        <p>Détection de réseaux souterrains et de cavités par géoradar et intelligence artificielle, pour les chantiers de construction au Maroc.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navigation</h4>
+        <a href="#plateforme">Plateforme</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#preuves">Technologie</a>
+        <a href="#processus">Processus</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:contact@geodetect.ma">contact@geodetect.ma</a>
+        <a href="#fondateur">Le fondateur</a>
+      </div>
+    </div>
+    <div class="foot-bas">
+      <span>© 2026 GéoDetect. L'intelligence du sous-sol.</span>
+      <span class="mono">Casablanca · Paris</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav qui se solidifie au scroll
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('solide', scrollY > 40), {passive:true});
+
+// Révélations au scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, {threshold:.12});
+document.querySelectorAll('.revele').forEach(el => obs.observe(el));
+
+// Fond radar animé : balayage et hyperboles
+const cv = document.getElementById('radar-canvas');
+const ctx = cv.getContext('2d');
+const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function taille(){ cv.width = cv.offsetWidth * devicePixelRatio; cv.height = cv.offsetHeight * devicePixelRatio; }
+taille(); addEventListener('resize', taille);
+
+function dessiner(t){
+  const w = cv.width, h = cv.height, dpr = devicePixelRatio;
+  ctx.clearRect(0,0,w,h);
+  // strates horizontales
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1 * dpr;
+  for(let y = h*0.25; y < h; y += h*0.13){
+    ctx.beginPath();
+    for(let x = 0; x <= w; x += 24*dpr){
+      const dy = Math.sin(x*0.002/dpr + y) * 6 * dpr;
+      x === 0 ? ctx.moveTo(x, y+dy) : ctx.lineTo(x, y+dy);
+    }
+    ctx.stroke();
+  }
+  // hyperboles fixes
+  const hyps = [[0.72, 0.62, 0.09], [0.48, 0.78, 0.06], [0.86, 0.82, 0.05]];
+  hyps.forEach(([cx, cy, r]) => {
+    ctx.strokeStyle = 'rgba(232,114,44,0.5)';
+    ctx.lineWidth = 2 * dpr;
+    ctx.beginPath();
+    for(let i = -1; i <= 1; i += 0.05){
+      const x = (cx + i*r*2.2) * w;
+      const y = (cy + Math.abs(i)*r*1.6) * h;
+      i === -1 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(232,114,44,0.85)';
+    ctx.beginPath(); ctx.arc(cx*w, cy*h, 3.5*dpr, 0, 7); ctx.fill();
+  });
+  // ligne de balayage verticale
+  if(!reduit){
+    const bx = ((t/6000) % 1) * w;
+    const grad = ctx.createLinearGradient(bx-90*dpr, 0, bx, 0);
+    grad.addColorStop(0, 'rgba(232,114,44,0)');
+    grad.addColorStop(1, 'rgba(232,114,44,0.16)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(bx-90*dpr, 0, 90*dpr, h);
+    ctx.fillStyle = 'rgba(232,114,44,0.55)';
+    ctx.fillRect(bx, 0, 1.5*dpr, h);
+    requestAnimationFrame(dessiner);
+  }
+}
+requestAnimationFrame(dessiner);
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('scene3d');
+  if (!canvas || !window.THREE) return;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const rendu = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  rendu.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(38, 2, 0.1, 100);
+  cam.position.set(0, 2.2, 8.2);
+  cam.lookAt(0, -0.7, 0);
+
+  const monde = new THREE.Group();
+  monde.rotation.x = 0.32;
+  monde.rotation.y = -0.55;
+  scene.add(monde);
+
+  const L = 7, H = 3.2, P = 4.2; // largeur, hauteur (profondeur sol), profondeur scène
+
+  // Strates translucides
+  const strates = [
+    {y: -0.4, h: 0.8, c: 0x3A4046, o: 0.30},
+    {y: -1.3, h: 1.0, c: 0x33383D, o: 0.34},
+    {y: -2.5, h: 1.4, c: 0x2B3034, o: 0.40},
+  ];
+  strates.forEach(s => {
+    const m = new THREE.Mesh(
+      new THREE.BoxGeometry(L, s.h, P),
+      new THREE.MeshBasicMaterial({color: s.c, transparent: true, opacity: s.o, depthWrite: false})
+    );
+    m.position.y = s.y;
+    monde.add(m);
+  });
+
+  // Arêtes du bloc
+  const aretes = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(L, H, P)),
+    new THREE.LineBasicMaterial({color: 0x6B7075, transparent: true, opacity: 0.7})
+  );
+  aretes.position.y = -H/2 + 0.4;
+  monde.add(aretes);
+
+  // Grille de surface (le chantier)
+  const grille = new THREE.GridHelper(L, 12, 0x4A5057, 0x3A4046);
+  grille.scale.z = P / L;
+  grille.position.y = 0.4;
+  monde.add(grille);
+
+  // Réseaux : cylindres traversant le bloc selon Z
+  const reseaux = [
+    {x: -1.7, y: -0.55, c: 0xE8722C},
+    {x:  0.4, y: -1.35, c: 0xE8722C},
+    {x:  1.9, y: -2.30, c: 0xE8722C},
+  ];
+  const marqueurs = [];
+  reseaux.forEach(r => {
+    const cyl = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, P + 0.3, 20),
+      new THREE.MeshBasicMaterial({color: r.c})
+    );
+    cyl.rotation.x = Math.PI / 2;
+    cyl.position.set(r.x, r.y, 0);
+    monde.add(cyl);
+    // halo de détection (s'allume au passage du scan)
+    const halo = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 18, 18),
+      new THREE.MeshBasicMaterial({color: 0xF2823D, transparent: true, opacity: 0})
+    );
+    halo.position.set(r.x, r.y, 0);
+    monde.add(halo);
+    marqueurs.push({x: r.x, halo});
+  });
+
+  // Cavité : sphère filaire dorée
+  const cavite = new THREE.Mesh(
+    new THREE.SphereGeometry(0.42, 14, 12),
+    new THREE.MeshBasicMaterial({color: 0xB8860B, wireframe: true, transparent: true, opacity: 0.75})
+  );
+  cavite.position.set(-0.6, -2.2, 0.7);
+  monde.add(cavite);
+  const haloCav = new THREE.Mesh(
+    new THREE.SphereGeometry(0.55, 16, 14),
+    new THREE.MeshBasicMaterial({color: 0xD4A017, transparent: true, opacity: 0})
+  );
+  haloCav.position.copy(cavite.position);
+  monde.add(haloCav);
+  marqueurs.push({x: cavite.position.x, halo: haloCav});
+
+  // Plan de scan orange (balaie selon X)
+  const plan = new THREE.Mesh(
+    new THREE.PlaneGeometry(P, H),
+    new THREE.MeshBasicMaterial({color: 0xE8722C, transparent: true, opacity: 0.13, side: THREE.DoubleSide, depthWrite: false})
+  );
+  plan.rotation.y = Math.PI / 2;
+  plan.position.y = -H/2 + 0.4;
+  monde.add(plan);
+  const ligneScan = new THREE.Mesh(
+    new THREE.PlaneGeometry(P, 0.03),
+    new THREE.MeshBasicMaterial({color: 0xF2823D, transparent: true, opacity: 0.9, side: THREE.DoubleSide})
+  );
+  ligneScan.rotation.y = Math.PI / 2;
+  ligneScan.position.y = 0.4;
+  monde.add(ligneScan);
+
+  // Interaction : rotation à la souris / au doigt
+  let saisi = false, dernierX = 0, dernierY = 0, vitesseAuto = 0.0016;
+  canvas.addEventListener('pointerdown', e => { saisi = true; dernierX = e.clientX; dernierY = e.clientY; canvas.classList.add('saisi'); });
+  addEventListener('pointerup', () => { saisi = false; canvas.classList.remove('saisi'); });
+  addEventListener('pointermove', e => {
+    if (!saisi) return;
+    monde.rotation.y += (e.clientX - dernierX) * 0.005;
+    monde.rotation.x = Math.max(0.05, Math.min(0.9, monde.rotation.x + (e.clientY - dernierY) * 0.003));
+    dernierX = e.clientX; dernierY = e.clientY;
+  });
+
+  // Rendu seulement quand visible
+  let visible = false;
+  new IntersectionObserver(es => es.forEach(e => visible = e.isIntersecting), {threshold: 0.05}).observe(canvas);
+
+  function redim(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (canvas.width !== w * rendu.getPixelRatio()) {
+      rendu.setSize(w, h, false);
+      cam.aspect = w / h;
+      cam.updateProjectionMatrix();
+    }
+  }
+
+  function boucle(t){
+    requestAnimationFrame(boucle);
+    if (!visible) return;
+    redim();
+    if (!saisi && !reduit) monde.rotation.y += vitesseAuto;
+    // balayage du scan
+    const sx = reduit ? 0.4 : (((t / 5200) % 1) * (L + 1)) - (L + 1) / 2;
+    plan.position.x = sx;
+    ligneScan.position.x = sx;
+    // halos : s'allument au passage
+    marqueurs.forEach(m => {
+      const d = Math.abs(sx - m.x);
+      m.halo.material.opacity = Math.max(0, 0.5 - d * 0.9);
+      const s = 1 + Math.max(0, 0.5 - d * 0.8);
+      m.halo.scale.set(s, s, s);
+    });
+    rendu.render(scene, cam);
+  }
+  requestAnimationFrame(boucle);
+})();
+</script>
+
+<script>
+(function(){
+  const sur = document.getElementById('surbrillance');
+  const etapes = document.querySelectorAll('#demo-etapes .demo-etape');
+  if (!sur || !etapes.length) return;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Régions de la capture (en % : gauche, haut, largeur, hauteur)
+  const regions = [
+    [0.5, 2.5, 15, 93],   // toute la sidebar
+    [17, 9, 55, 82],      // carte et détections
+    [74.5, 5, 25, 90],    // panneau profondeurs
+    [76.5, 0.3, 23, 6],   // boutons export (haut droite)
+  ];
+  let i = 0;
+  function applique(n){
+    const [g, h, l, ht] = regions[n];
+    sur.style.left = g + '%';
+    sur.style.top = h + '%';
+    sur.style.width = l + '%';
+    sur.style.height = ht + '%';
+    etapes.forEach((e, j) => e.classList.toggle('active', j === n));
+  }
+  applique(1);
+  if (!reduit){
+    setInterval(() => { i = (i + 1) % regions.length; applique(i); }, 3600);
+  }
+  etapes.forEach((e, j) => e.addEventListener('click', () => { i = j; applique(j); }));
+})();
+</script>
+</body>
+</html>
