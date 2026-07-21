@@ -39,6 +39,20 @@ nav.solide{background:rgba(28,31,35,.92);backdrop-filter:blur(12px);box-shadow:0
 .nav-cta:hover{background:var(--orange-vif)}
 @media(max-width:760px){.nav-liens a:not(.nav-cta){display:none}}
 
+/* ===== Menu mobile ===== */
+.menu-bascule{display:none;flex-direction:column;justify-content:center;align-items:flex-end;gap:5px;width:30px;height:30px;background:none;border:none;cursor:pointer;padding:0;margin-left:14px}
+.menu-bascule span{display:block;width:100%;height:2px;background:#fff;border-radius:2px;transition:transform .25s,opacity .25s,width .25s}
+nav.ouvert .menu-bascule span:nth-child(1){transform:translateY(7px) rotate(45deg);width:100%}
+nav.ouvert .menu-bascule span:nth-child(2){opacity:0}
+nav.ouvert .menu-bascule span:nth-child(3){transform:translateY(-7px) rotate(-45deg);width:100%}
+.menu-mobile{display:none;flex-direction:column;gap:0;background:rgba(28,31,35,.98);backdrop-filter:blur(12px);padding:6px 28px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.menu-mobile a{color:rgba(255,255,255,.85);text-decoration:none;font-size:1rem;font-weight:500;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.menu-mobile a.actif{color:var(--orange)}
+.menu-mobile a.nav-cta{color:#fff!important;text-align:center;border-radius:8px;margin-top:14px;padding:14px 0;border-bottom:none}
+nav.ouvert{background:rgba(28,31,35,.98)!important;backdrop-filter:blur(12px)}
+nav.ouvert .menu-mobile{display:flex}
+@media(max-width:760px){.menu-bascule{display:flex}}
+
 /* ===== Hero plein écran (accueil) ===== */
 .hero{min-height:100vh;background:var(--charbon);color:#fff;position:relative;display:flex;align-items:center;overflow:hidden}
 #radar-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
