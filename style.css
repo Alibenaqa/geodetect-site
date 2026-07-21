@@ -42,11 +42,8 @@ body.page-contact nav.solide .logo-empile .logo-alt{opacity:0}
 .nav-liens{margin-left:auto;display:flex;gap:32px;align-items:center}
 .nav-liens a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
 .nav-liens a:hover,.nav-liens a.actif{color:#fff}
-.nav-cta{background:var(--orange);color:#fff!important;padding:9px 20px;border-radius:8px;font-weight:600;transition:background .3s ease,color .3s ease}
+.nav-cta{background:var(--orange);color:#fff!important;padding:9px 20px;border-radius:8px;font-weight:600}
 .nav-cta:hover{background:var(--orange-vif)}
-body.page-contact .nav-int .nav-cta{background:#fff;color:var(--orange)!important}
-body.page-contact nav.solide .nav-int .nav-cta,
-body.page-contact nav.ouvert .nav-int .nav-cta{background:var(--orange);color:#fff!important}
 @media(max-width:760px){.nav-liens a:not(.nav-cta){display:none}}
 
 /* ===== Menu mobile ===== */
