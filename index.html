@@ -74,6 +74,11 @@ nav.solide{background:rgba(28,31,35,.92);backdrop-filter:blur(12px);box-shadow:0
 .hero-stat .v{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;color:#fff}
 .hero-stat .l{font-size:.78rem;color:var(--gris)}
 @media(max-width:700px){.hero-stat:nth-child(3){display:none}}
+@media(max-width:640px){
+  .hero{min-height:auto;display:block;overflow:visible;padding-top:1px}
+  .hero-int{padding:110px 22px 40px}
+  .hero-bas{position:static;margin-top:8px}
+}
 
 /* ===== Bande standards ===== */
 .bande{background:var(--fond-doux);border-bottom:1px solid var(--bordure)}
@@ -120,7 +125,13 @@ h2{font-size:clamp(1.9rem,4vw,2.9rem);margin:18px 0 20px;font-weight:700;max-wid
 .scene-regle{position:absolute;left:28px;top:50%;transform:translateY(-32%);z-index:4;display:flex;flex-direction:column;gap:44px;color:rgba(255,255,255,.45);font-family:'IBM Plex Mono',monospace;font-size:.7rem}
 .scene-regle span{display:flex;align-items:center;gap:10px}
 .scene-regle span::after{content:"";width:22px;height:1px;background:rgba(255,255,255,.25);display:inline-block}
-@media(max-width:640px){.scene-cadre{height:88vh;min-height:520px}.scene-regle{display:none}.scene-texte{padding-top:84px}}
+@media(max-width:640px){
+  .scene-cadre{height:auto;min-height:0}
+  .scene-regle,.scene-astuce,.scene-legende{display:none}
+  .scene-texte{position:static;padding:84px 0 0;background:var(--charbon)}
+  .scene-texte .intro{padding-bottom:32px}
+  #scene3d{position:relative;height:280px}
+}
 /* ===== Solutions ===== */
 .solutions{background:var(--fond)}
 .grille-sol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:52px}
