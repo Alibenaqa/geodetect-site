@@ -32,6 +32,13 @@ nav.solide{background:rgba(28,31,35,.92);backdrop-filter:blur(12px);box-shadow:0
 .nav-int{max-width:1180px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:12px}
 .nav-int img{width:32px;height:32px}
 .nav-marque{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;text-decoration:none;letter-spacing:-.01em}
+.logo-empile{position:relative;display:inline-block;height:34px}
+.logo-empile img{position:absolute;top:0;left:0}
+.logo-empile .logo-alt{opacity:0;transition:opacity .25s}
+body.page-contact .logo-empile .logo-normal{opacity:0}
+body.page-contact .logo-empile .logo-alt{opacity:1}
+body.page-contact nav.solide .logo-empile .logo-normal{opacity:1}
+body.page-contact nav.solide .logo-empile .logo-alt{opacity:0}
 .nav-liens{margin-left:auto;display:flex;gap:32px;align-items:center}
 .nav-liens a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
 .nav-liens a:hover,.nav-liens a.actif{color:#fff}
