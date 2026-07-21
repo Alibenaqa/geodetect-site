@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La plateforme — GéoDetect</title>
+<meta name="description" content="Le jumeau numérique de votre chantier : zones, passages de scan, détections géolocalisées avec profondeur calculée, rapports PDF.">
+<link rel="icon" type="image/png" href="assets/favicon_32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-int">
+    <a class="nav-marque" href="index.html"><img src="assets/geodetect_logo_dark_1700.png" alt="GéoDetect" style="height:34px;width:auto;display:block"></a>
+    <div class="nav-liens">
+      <a href="plateforme.html" class="actif">Plateforme</a>
+      <a href="solutions.html">Solutions</a>
+      <a href="technologie.html">Technologie</a>
+      <a href="processus.html">Processus</a>
+      <a class="nav-cta" href="contact.html">Nous contacter</a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="conteneur">
+    <div class="etiquette">La plateforme</div>
+    <h1>Le jumeau numérique de votre chantier</h1>
+    <p class="intro">Zones de chantier, passages de scan, détections géolocalisées avec profondeur calculée, rapports PDF : tout le sous-sol de votre projet, dans une interface consultable à vie.</p>
+  </div>
+</header>
+
+<section class="plateforme">
+  <div class="cadre-nav revele">
+    <div class="cadre">
+      <div class="barre"><i></i><i></i><i></i><span>geodetect · vue chantier</span></div>
+      <div style="position:relative">
+        <img src="assets/dashboard.jpg" alt="La plateforme GéoDetect : carte d'un chantier avec zones, détections de réseaux et profondeurs calculées" loading="lazy">
+        <div class="surbrillance" id="surbrillance"></div>
+      </div>
+    </div>
+  </div>
+  <div class="demo-etapes" id="demo-etapes">
+    <div class="demo-etape"><span class="n">ÉTAPE 01</span><b>Importer le chantier</b><p>Zones dessinées, passages de scan, images géoradar chargées.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 02</span><b>Détection par l'IA</b><p>Les réseaux et cavités apparaissent sur la carte, à leur position.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 03</span><b>Profondeurs et risques</b><p>Chaque détection avec sa profondeur calculée et son niveau de risque.</p></div>
+    <div class="demo-etape"><span class="n">ÉTAPE 04</span><b>Rapport en un clic</b><p>PDF complet avec plan du chantier, prêt pour le terrain.</p></div>
+  </div>
+  <div class="puces-produit">
+    <div class="puce revele"><b>Zones et sous-zones</b>Dessinez le chantier à sa forme réelle, découpez-le en zones numérotées, quadrillez passage par passage.</div>
+    <div class="puce revele"><b>Profondeur physique</b>Calculée depuis le temps de propagation de l'onde et le type de sol : la méthode standard de la géophysique.</div>
+    <div class="puce revele"><b>Rapport en un clic</b>PDF avec plan du chantier, tableau des détections, profondeurs et niveaux de risque, prêt pour le terrain.</div>
+  </div>
+</section>
+
+<section class="sous-sol" id="sous-sol">
+  <div class="scene-cadre">
+    <canvas id="scene3d"></canvas>
+    <div class="scene-texte">
+      <div class="conteneur">
+        <div class="etiquette">Sous vos pieds</div>
+        <h2>Ce que le géoradar révèle, en trois dimensions</h2>
+        <p class="intro">Les strates du sol, les réseaux qui le traversent, les cavités invisibles en surface. Le plan orange simule le passage du scan : chaque détection s'allume à son passage. Glissez pour explorer.</p>
+      </div>
+    </div>
+    <div class="scene-regle"><span>0 m</span><span>1 m</span><span>2 m</span><span>3 m</span></div>
+    <div class="scene-astuce">glisser pour pivoter</div>
+    <div class="scene-legende">
+      <span><i style="background:#E8722C"></i>Réseau détecté</span>
+      <span><i style="background:#B8860B"></i>Cavité</span>
+      <span><i style="background:rgba(232,114,44,.5)"></i>Plan de scan</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="conteneur">
+    <div class="foot-grille">
+      <div>
+        <div class="foot-marque"><img src="assets/geodetect_logo_dark_1700.png" alt="GéoDetect" style="width:170px;height:auto"></div>
+        <p>Détection de réseaux souterrains et de cavités par géoradar et intelligence artificielle, pour les chantiers de construction au Maroc.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navigation</h4>
+        <a href="plateforme.html">Plateforme</a>
+        <a href="solutions.html">Solutions</a>
+        <a href="technologie.html">Technologie</a>
+        <a href="processus.html">Processus</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:contact@geodetect.ma">contact@geodetect.ma</a>
+        <a href="a-propos.html">Le fondateur</a>
+      </div>
+    </div>
+    <div class="foot-bas">
+      <span>© 2026 GéoDetect. L'intelligence du sous-sol.</span>
+      <span class="mono">Casablanca · Paris</span>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="scene3d.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
