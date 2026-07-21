@@ -37,8 +37,10 @@ nav.solide{background:rgba(28,31,35,.92);backdrop-filter:blur(12px);box-shadow:0
 .logo-empile .logo-alt{opacity:0}
 body.page-contact .logo-empile .logo-normal{opacity:0}
 body.page-contact .logo-empile .logo-alt{opacity:1}
-body.page-contact nav.solide .logo-empile .logo-normal{opacity:1}
-body.page-contact nav.solide .logo-empile .logo-alt{opacity:0}
+body.page-contact nav.solide .logo-empile .logo-normal,
+body.page-contact nav.ouvert .logo-empile .logo-normal{opacity:1}
+body.page-contact nav.solide .logo-empile .logo-alt,
+body.page-contact nav.ouvert .logo-empile .logo-alt{opacity:0}
 .nav-liens{margin-left:auto;display:flex;gap:32px;align-items:center}
 .nav-liens a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
 .nav-liens a:hover,.nav-liens a.actif{color:#fff}
